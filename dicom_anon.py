@@ -217,6 +217,7 @@ class DicomAnon(object):
         self.spec_file = kwargs.get('spec_file', os.path.join(os.path.dirname(__file__), 'spec_files',
                                                               'annexe_ext.dat'))
         self.white_list_file = kwargs.get('white_list', None)
+        self.force_tag_list = kwargs.get('force_tag_list', None)
         self.audit_file = kwargs.get('audit_file', 'identity.db')
         self.log_file = kwargs.get('log_file', 'dicom_anon.log')
         self.quarantine = kwargs.get('quarantine', 'quarantine')
@@ -411,6 +412,10 @@ class DicomAnon(object):
                 cleaned = self.basic(ds, e, study_pk)
         else:
             cleaned = self.basic(ds, e, study_pk)
+
+        if self.force_tag_list != None:
+            if str(e.tag) in self.force_tag_list:
+                cleaned = self.force_tag_list[str(e.tag)]
 
         if cleaned is not None and e.tag in ds and ds[e.tag].value is not None:
             ds[e.tag].value = cleaned
